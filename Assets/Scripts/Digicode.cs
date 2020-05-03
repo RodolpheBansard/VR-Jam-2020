@@ -7,6 +7,8 @@ public class Digicode : MonoBehaviour
 {
     public string code;
     public Text displayText;
+    public bool isCoffre;
+    public GameObject door = null;
 
     private bool isSolved = false;
     private string inputPlayer;
@@ -18,27 +20,47 @@ public class Digicode : MonoBehaviour
 
     public void PressNumber(string number)
     {
-        inputPlayer += number;
-        displayText.text += number;
+        if (!isSolved)
+        {
+            inputPlayer += number;
+            displayText.text += number;
+        }
+            
     }
 
     public void Clear()
     {
-        displayText.text = "";
-        inputPlayer = "";
+        if (!isSolved)
+        {
+            displayText.text = "";
+            inputPlayer = "";
+        }
+            
     }
 
     public void Validate()
     {
-        if(inputPlayer == code)
+        if (!isSolved)
         {
-            isSolved = true;
-            displayText.text = "GRANTED";
+            if (inputPlayer == code)
+            {
+                if (door != null)
+                {
+                    door.GetComponent<Animator>().SetTrigger("Open");
+                }
+                isSolved = true;
+                displayText.text = "GRANTED";
+                if (isCoffre)
+                {
+                    GetComponent<Animator>().SetTrigger("Open");
+                }
+            }
+            else
+            {
+                StartCoroutine(Reset());
+            }
         }
-        else
-        {
-            StartCoroutine(Reset());
-        }
+        
     }
 
     IEnumerator Reset()
